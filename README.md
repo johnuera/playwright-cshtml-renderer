@@ -1,10 +1,10 @@
-# Invoice / Label Generator
+# PDF Generator - Playwright + dotnet
 
 A .NET project that generates invoices and shipping labels using:
 
 - Razor (CSHTML) templates
 - RazorLight for server-side rendering
-- Playwright for PDF / screenshot generation
+- Playwright for PDF / PDF generation
 - ZXing.Net for barcode generation
 
 ---
