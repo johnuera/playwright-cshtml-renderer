@@ -14,7 +14,7 @@ public class Program
     static async Task Main(string[] args)
     {
         var outputPdf = args.Length > 0 ? args[0] : "report.pdf";
-        var culture = args.Length > 1 ? args[1] : "de-DE"; // e.g. de-DE, nl-NL, en-US
+        var culture = args.Length > 1 ? args[1] : "de"; // e.g. de-DE, nl-NL, en-US
 
         // ---- Templates root ----
         var templatesRoot = Path.Combine(AppContext.BaseDirectory, "Templates");
