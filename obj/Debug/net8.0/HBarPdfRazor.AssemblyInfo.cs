@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HBarPdfRazor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d71e48b17c81af1a7533621290bbb316614e1e49")]
 [assembly: System.Reflection.AssemblyProductAttribute("HBarPdfRazor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HBarPdfRazor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
