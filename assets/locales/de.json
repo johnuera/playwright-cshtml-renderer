@@ -1,0 +1,16 @@
+{
+  "invoice": {
+    "footer": {
+      "paymentNote": "Die Zahlungsübersicht zu dieser Bestellung findest du in deinem Konto. Wenn du eine Rechnung mit ausgewiesener Mehrwertsteuer benötigst, kontaktiere bitte den Verkäufer.",
+      "returnIntro": "Du kannst den Artikel innerhalb von 30 Tagen nach Erhalt zurücksenden. So funktioniert es:",
+      "returnSteps": [
+        "Melde dich in deinem Konto an und öffne deine Bestellung.",
+        "Sieh dir die Bestelldetails an und klicke auf „Rücksendung anmelden“.",
+        "Schließe die Rücksendeanfrage ab und erhalte dein Rücksendeetikett sowie weitere Anweisungen."
+      ],
+      "returnOutro": "Sobald der Verkäufer bestätigt, dass der Artikel in einwandfreiem Zustand eingegangen ist, entfällt deine Zahlungsverpflichtung. Hast du bereits bezahlt, erhältst du eine Rückerstattung.",
+      "reviewNote": "Für uns und den Verkäufer ist es sehr wertvoll, wenn du deine Kauferfahrung teilst.",
+      "supportNote": "Kontaktiere den Verkäufer über dein Konto, wenn du Fragen zum erhaltenen Artikel hast. Bei Fragen zur Zahlung besuche bitte die Kundenservice-Seite."
+    }
+  }
+}

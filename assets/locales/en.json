@@ -1,0 +1,16 @@
+{
+  "invoice": {
+    "footer": {
+      "paymentNote": "You can find the payment overview for this order in your account. If you require a VAT invoice, please contact the seller.",
+      "returnIntro": "You can return the item within 30 days after receipt. The process works as follows:",
+      "returnSteps": [
+        "Log in to your account and locate your order.",
+        "Open the order details and click on 'Request Return'.",
+        "Complete the return request and receive your return label and instructions."
+      ],
+      "returnOutro": "Once the seller confirms receipt of the item in good condition, your payment obligation will be cancelled. If you have already paid, the amount will be refunded.",
+      "reviewNote": "Your feedback about your purchase experience is greatly appreciated.",
+      "supportNote": "Please contact the seller through your account if you have questions about the received item. For payment-related questions, visit the customer service page."
+    }
+  }
+}

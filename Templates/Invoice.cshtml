@@ -1,0 +1,307 @@
+@model HBarPdfRazor.InvoiceTemplateModel
+
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+      @@page {
+        size: A4;
+        margin: 14mm;
+      }
+      @@font-face {
+        font-family: 'Limelight';
+        src: url('@Raw(Model.FontBase64)') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #111;
+        font-size: 12px;
+        line-height: 1.25;
+      }
+
+
+      .title {
+        font-family: "Limelight", sans-serif;
+        font-size: 36px;
+        letter-spacing: 2px;
+      }
+
+      .page {
+        break-after: page;
+      }
+
+      .page:last-child {
+        break-after: auto;
+      }
+
+      /* Packing slip layout */
+      .row {
+        display: flex;
+        gap: 18px;
+      }
+
+      .col {
+        flex: 1;
+      }
+
+      .box {
+        border: 0;
+      }
+
+      .muted {
+        color: #555;
+      }
+
+      .small {
+        font-size: 10px;
+      }
+
+      .h1 {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .h2 {
+        font-size: 13px;
+        font-weight: 700;
+        margin: 2px 0 0 0;
+      }
+
+      .addr-title {
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .addr {
+        white-space: pre-line;
+      }
+
+      .meta {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 4px 10px;
+        max-width: 360px;
+      }
+
+      .meta .k {
+        color: #333;
+      }
+
+      .meta .v {
+        font-weight: 700;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+
+      thead th {
+        text-align: left;
+        font-weight: 700;
+        border-bottom: 1px solid #999;
+        padding: 6px 4px;
+        font-size: 11px;
+      }
+
+      tbody td {
+        border-bottom: 1px solid #e5e5e5;
+        padding: 8px 4px;
+        vertical-align: top;
+      }
+
+      .right {
+        text-align: right;
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .notice {
+        margin-top: 14px;
+        font-size: 11px;
+      }
+
+      .bullets {
+        margin: 6px 0 0 18px;
+        padding: 0;
+      }
+
+      .bullets li {
+        margin: 3px 0;
+      }
+
+      /* Label pages */
+      .label {
+        padding: 10mm;
+        border: 0;
+        height: calc(297mm - 28mm);
+        /* A4 minus margins-ish */
+        box-sizing: border-box;
+      }
+
+      .label-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .label-grid {
+        display: grid;
+        grid-template-columns: 1fr 140px;
+        gap: 10px;
+        align-items: start;
+        margin-top: 8px;
+      }
+
+      .label-big {
+        font-size: 14px;
+        font-weight: 700;
+        margin-top: 6px;
+      }
+
+      .label-carrier {
+        font-weight: 700;
+        margin-top: 6px;
+      }
+
+      .barcode {
+        margin-top: 14px;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 16px;
+        letter-spacing: 1px;
+        padding: 10px 0;
+        border-top: 2px solid #111;
+        border-bottom: 2px solid #111;
+        text-align: center;
+      }
+
+      .label-footer {
+        position: absolute;
+        bottom: 14mm;
+        left: 14mm;
+        right: 14mm;
+        font-size: 10px;
+        color: #333;
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .logo {
+        height: 48px;
+      }
+
+      /* Simple safety for long strings */
+      .wrap {
+        white-space: pre-line;
+        word-break: break-word;
+      }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: Packing slip ("Pakbon") -->
+  <section class="page">
+    <div class="center">
+      <img class="logo " src="@Model.LogoBase64" alt="Logo" />
+      <h1 class="title">PDF with @Model.Culture Locale</h1>
+<img src="data:image/png;base64,@Model.BarcodeBase64" alt="Barcode" />
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="addr-title">Verzendadres De Verkoper:</div>
+        <div class="addr">@Model.SellerAddress</div>
+      </div>
+      <div class="col">
+        <div class="addr-title">@Model.PlatformName</div>
+        <div class="addr">@Model.PlatformAddress</div>
+      </div>
+
+      <div class="col" style="text-align:right;">
+        <div class="h1">Pakbon</div>
+        <div class="h2 muted">alles op een rijtje</div>
+
+        <div class="meta" style="margin-left:auto;">
+          <div class="k">Datum:</div>
+          <div class="v">@Model.OrderDate</div>
+          <div class="k">Bestelnummer:</div>
+          <div class="v">@Model.OrderNumber</div>
+          <div class="k">Klantnummer:</div>
+          <div class="v">@Model.CustomerNumber</div>
+          <div class="k">Verkoper referentie:</div>
+          <div class="v">@Model.SellerReference</div>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Artikelomschrijving</th>
+          <th>Conditie</th>
+          <th>ISBN / EAN</th>
+          <th class="right">Aantal</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var line in Model.Lines)
+        {
+          <tr>
+            <td class="wrap">@line.Description</td>
+            <td>@line.Condition</td>
+            <td>@line.IsbnOrEan</td>
+            <td class="right">@line.Quantity</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="notice">
+
+      <div>@Model.Locale.T("invoice.footer.paymentNote")</div>
+      <div style="margin-top:10px; font-weight:700;">
+        Returning an item? </div>
+        <div>@Model.Locale.T("invoice.footer.returnIntro")</div>
+        <ul class="bullets">
+          @foreach (var step in Model.Locale.TA("invoice.footer.returnSteps"))
+          {
+            <li>@step</li>
+          }
+        </ul>
+        <div style="margin-top:10px;">
+          @Model.Locale.T("invoice.footer.returnOutro")
+        </div>
+        <div style="margin-top:12px; font-weight:700;">
+          Assessment request </div>
+          <div>@Model.Locale.T("invoice.footer.reviewNote")</div>
+
+          <div style="margin-top:12px; font-weight:700;">
+            Do you have any questions? </div>
+
+            <div>@Model.Locale.T("invoice.footer.supportNote")</div>
+
+          </div>
+        </section>
+      </body>
+
+    </html>
