@@ -50,7 +50,7 @@ A .NET project that generates invoices and shipping labels using:
   └── images/
 
 Program.cs
-HBarPdfRazor.csproj
+PDFGenerator.csproj
 README.md
 ```
 

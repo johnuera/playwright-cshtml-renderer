@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
 
-namespace HBarPdfRazor;
+namespace PDFGenerator;
 
 public class Program
 {
@@ -41,8 +41,7 @@ public class Program
         var fontPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "fonts", "Limelight-Regular.ttf");
         byte[] fontBytes = await File.ReadAllBytesAsync(fontPath);
         string fontBase64 = $"data:font/ttf;base64,{Convert.ToBase64String(fontBytes)}";
-        Console.WriteLine(fontBase64);
-
+ 
         // ---- Logo ----
         var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "images", "logo.png");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);

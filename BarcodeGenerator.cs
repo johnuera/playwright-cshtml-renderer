@@ -3,7 +3,7 @@ using ZXing;
 using ZXing.Common;
 using ZXing.SkiaSharp.Rendering;
 using SkiaSharp;
-namespace HBarPdfRazor;
+namespace PDFGenerator;
 
 public static class BarcodeService
 {

@@ -1,4 +1,4 @@
-namespace HBarPdfRazor;
+namespace PDFGenerator;
 
 public sealed class InvoiceTemplateModel
 {   

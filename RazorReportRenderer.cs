@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using RazorLight;
 
-namespace HBarPdfRazor;
+namespace PDFGenerator;
 
 public sealed class RazorReportRenderer
 {

@@ -1,7 +1,7 @@
 
 using System.Text.Json;
 
-namespace HBarPdfRazor;
+namespace PDFGenerator;
 
 public static class Localisation
 {
