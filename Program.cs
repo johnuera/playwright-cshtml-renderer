@@ -18,15 +18,13 @@ public class Program
         var culture = args.Length > 1 ? args[1] : "de";
 
         // ---- Assets ----
-        var fontPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "fonts", "Limelight-Regular.ttf");
+        var fontPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "fonts", "Limelight-Regular.woff2");
         byte[] fontBytes = await File.ReadAllBytesAsync(fontPath);
-        string fontBase64 = $"data:font/ttf;base64,{Convert.ToBase64String(fontBytes)}";
-
+        string fontBase64 =Convert.ToBase64String(fontBytes);
         var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "images", "logo.png");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
         string logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
-
-        // ---- Load locale json ----
+         // ---- Load locale json ----
         var locale = Localisation.LoadLocale(culture);
 
         // ---- Build model ----
@@ -40,15 +38,15 @@ public class Program
 
             SellerAddress =
             @"Distorted People GmbH
-Example Street 123
-1234 AB Example City
-COUNTRY",
+            Example Street 123
+            1234 AB Example City
+            COUNTRY",
 
-            PlatformName = "Online Marketplace Platform",
-            PlatformAddress =
-            @"Platform Street 456
-5678 CD Platform City
-COUNTRY",
+                        PlatformName = "Online Marketplace Platform",
+                        PlatformAddress =
+                        @"Platform Street 456
+            5678 CD Platform City
+            COUNTRY",
 
             OrderDate = "01.01.2026",
             OrderNumber = "ORD-0000001",
@@ -76,12 +74,10 @@ COUNTRY",
 
         var page = await browser.NewPageAsync();
 
-        // Base URL helps if you later add relative links (optional)
-        await page.SetContentAsync(html, new() { WaitUntil = WaitUntilState.NetworkIdle });
+        // Load your HTML first (no external resources needed)
+        await page.SetContentAsync(html, new() { WaitUntil = WaitUntilState.Load });
 
-        // Wait for font loading (your original approach)
-        await page.EvaluateAsync("document.fonts.ready");
-
+        // Generate PDF
         var pdfBytes = await page.PdfAsync(new()
         {
             Format = "A4",

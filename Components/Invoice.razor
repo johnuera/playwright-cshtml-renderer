@@ -3,6 +3,15 @@
 
 @code {
     [Parameter] public InvoiceTemplateModel Model { get; set; } = default!;
+
+    private string font = "";
+
+    protected override void OnParametersSet()
+    {
+        font = $"data:font/woff2;base64,{Model.FontBase64}";
+        //Console.WriteLine(font);
+
+    }
 }
 
 <!doctype html>
@@ -16,10 +25,12 @@
       }
 
       @@font-face {
-        font-family: 'Limelight';
-        src: url('@Model.FontBase64') format('truetype');
+        font-family: "Limelight";
+        src: url('@((MarkupString)font)') format('woff2');
         font-weight: normal;
         font-style: normal;
+        font-display: swap;
+
       }
 
       html,
@@ -188,13 +199,9 @@
 
       .barcode {
         margin-top: 14px;
-        font-family: "Consolas", "Courier New", monospace;
-        font-size: 16px;
-        letter-spacing: 1px;
-        padding: 10px 0;
-        border-top: 2px solid #111;
-        border-bottom: 2px solid #111;
+         padding: 10px 0; 
         text-align: center;
+        height: 50px;
       }
 
       .label-footer {
@@ -229,7 +236,7 @@
       @* <img src="@Model.BarcodeBase64" alt="Barcode" /> *@
 
       @* If BarcodeBase64 is raw base64 png bytes (your old cshtml did this): *@
-      <img src="data:image/png;base64,@Model.BarcodeBase64" alt="Barcode" />
+      <img class="barcode" src="data:image/png;base64,@Model.BarcodeBase64" alt="Barcode" />
     </div>
 
     <div class="row">
@@ -286,27 +293,27 @@
     </table>
 
     <div class="notice">
-      <div>@Model.Locale?.T("invoice.footer.paymentNote") ?? ""</div>
+      <div>@Model.Locale?.T("invoice.footer.paymentNote")</div>
 
       <div style="margin-top:10px; font-weight:700;">Returning an item?</div>
-      <div>@Model.Locale?.T("invoice.footer.returnIntro") ?? ""</div>
+      <div>@Model.Locale?.T("invoice.footer.returnIntro")</div>
 
       <ul class="bullets">
-        @foreach (var step in Model.Locale?.TA("invoice.footer.returnSteps") ?? [])
+        @foreach (var step in Model.Locale?.TA("invoice.footer.returnSteps")??[])
         {
           <li>@step</li>
         }
       </ul>
 
       <div style="margin-top:10px;">
-        @Model.Locale?.T("invoice.footer.returnOutro") ?? ""
+        @Model.Locale?.T("invoice.footer.returnOutro")
       </div>
 
       <div style="margin-top:12px; font-weight:700;">Assessment request</div>
-      <div>@Model.Locale?.T("invoice.footer.reviewNote") ?? ""</div>
+      <div>@Model.Locale?.T("invoice.footer.reviewNote")</div>
 
       <div style="margin-top:12px; font-weight:700;">Do you have any questions?</div>
-      <div>@Model.Locale?.T("invoice.footer.supportNote") ?? ""</div>
+      <div>@Model.Locale?.T("invoice.footer.supportNote")</div>
     </div>
   </section>
 </body>
