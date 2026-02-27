@@ -1,8 +1,12 @@
-@model PDFGenerator.InvoiceTemplateModel
+@using PDFGenerator
+@using Microsoft.AspNetCore.Components
 
+@code {
+    [Parameter] public InvoiceTemplateModel Model { get; set; } = default!;
+}
 
 <!doctype html>
-<html>
+<html lang="@Model.Culture">
 <head>
   <meta charset="utf-8" />
   <style>
@@ -10,13 +14,13 @@
         size: A4;
         margin: 14mm;
       }
+
       @@font-face {
         font-family: 'Limelight';
-        src: url('@Raw(Model.FontBase64)') format('truetype');
+        src: url('@Model.FontBase64') format('truetype');
         font-weight: normal;
         font-style: normal;
       }
-
 
       html,
       body {
@@ -30,7 +34,6 @@
         font-size: 12px;
         line-height: 1.25;
       }
-
 
       .title {
         font-family: "Limelight", sans-serif;
@@ -203,10 +206,6 @@
         color: #333;
       }
 
-      .center {
-        text-align: center;
-      }
-
       .logo {
         height: 48px;
       }
@@ -218,20 +217,27 @@
       }
   </style>
 </head>
-<body>
 
+<body>
   <!-- PAGE 1: Packing slip ("Pakbon") -->
   <section class="page">
     <div class="center">
-      <img class="logo " src="@Model.LogoBase64" alt="Logo" />
+      <img class="logo" src="@Model.LogoBase64" alt="Logo" />
       <h1 class="title">PDF with @Model.Culture Locale</h1>
-<img src="data:image/png;base64,@Model.BarcodeBase64" alt="Barcode" />
+
+      @* If BarcodeBase64 is already a full data URL, use it directly: *@
+      @* <img src="@Model.BarcodeBase64" alt="Barcode" /> *@
+
+      @* If BarcodeBase64 is raw base64 png bytes (your old cshtml did this): *@
+      <img src="data:image/png;base64,@Model.BarcodeBase64" alt="Barcode" />
     </div>
+
     <div class="row">
       <div class="col">
         <div class="addr-title">Verzendadres De Verkoper:</div>
         <div class="addr">@Model.SellerAddress</div>
       </div>
+
       <div class="col">
         <div class="addr-title">@Model.PlatformName</div>
         <div class="addr">@Model.PlatformAddress</div>
@@ -244,10 +250,13 @@
         <div class="meta" style="margin-left:auto;">
           <div class="k">Datum:</div>
           <div class="v">@Model.OrderDate</div>
+
           <div class="k">Bestelnummer:</div>
           <div class="v">@Model.OrderNumber</div>
+
           <div class="k">Klantnummer:</div>
           <div class="v">@Model.CustomerNumber</div>
+
           <div class="k">Verkoper referentie:</div>
           <div class="v">@Model.SellerReference</div>
         </div>
@@ -277,31 +286,28 @@
     </table>
 
     <div class="notice">
+      <div>@Model.Locale?.T("invoice.footer.paymentNote") ?? ""</div>
 
-      <div>@Model.Locale.T("invoice.footer.paymentNote")</div>
-      <div style="margin-top:10px; font-weight:700;">
-        Returning an item? </div>
-        <div>@Model.Locale.T("invoice.footer.returnIntro")</div>
-        <ul class="bullets">
-          @foreach (var step in Model.Locale.TA("invoice.footer.returnSteps"))
-          {
-            <li>@step</li>
-          }
-        </ul>
-        <div style="margin-top:10px;">
-          @Model.Locale.T("invoice.footer.returnOutro")
-        </div>
-        <div style="margin-top:12px; font-weight:700;">
-          Assessment request </div>
-          <div>@Model.Locale.T("invoice.footer.reviewNote")</div>
+      <div style="margin-top:10px; font-weight:700;">Returning an item?</div>
+      <div>@Model.Locale?.T("invoice.footer.returnIntro") ?? ""</div>
 
-          <div style="margin-top:12px; font-weight:700;">
-            Do you have any questions? </div>
+      <ul class="bullets">
+        @foreach (var step in Model.Locale?.TA("invoice.footer.returnSteps") ?? [])
+        {
+          <li>@step</li>
+        }
+      </ul>
 
-            <div>@Model.Locale.T("invoice.footer.supportNote")</div>
+      <div style="margin-top:10px;">
+        @Model.Locale?.T("invoice.footer.returnOutro") ?? ""
+      </div>
 
-          </div>
-        </section>
-      </body>
+      <div style="margin-top:12px; font-weight:700;">Assessment request</div>
+      <div>@Model.Locale?.T("invoice.footer.reviewNote") ?? ""</div>
 
-    </html>
+      <div style="margin-top:12px; font-weight:700;">Do you have any questions?</div>
+      <div>@Model.Locale?.T("invoice.footer.supportNote") ?? ""</div>
+    </div>
+  </section>
+</body>
+</html>

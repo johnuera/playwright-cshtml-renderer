@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Playwright;
-
+using PDFGenerator.Components;
 namespace PDFGenerator;
 
 public class Program
@@ -14,35 +15,13 @@ public class Program
     static async Task Main(string[] args)
     {
         var outputPdf = args.Length > 0 ? args[0] : "report.pdf";
-        var culture = args.Length > 1 ? args[1] : "de"; // e.g. de-DE, nl-NL, en-US
+        var culture = args.Length > 1 ? args[1] : "de";
 
-        // ---- Templates root ----
-        var templatesRoot = Path.Combine(AppContext.BaseDirectory, "Templates");
-        if (!Directory.Exists(templatesRoot))
-            templatesRoot = Path.Combine(Directory.GetCurrentDirectory(), "Templates");
-
-        if (!Directory.Exists(templatesRoot))
-        {
-            throw new DirectoryNotFoundException(
-                "Templates folder not found. Looked in:\n" +
-                Path.Combine(AppContext.BaseDirectory, "Templates") + "\n" +
-                Path.Combine(Directory.GetCurrentDirectory(), "Templates"));
-        }
-
-        // Template file name (relative to templatesRoot)
-        var templateName = "Invoice.cshtml";
-        var fullTemplatePath = Path.Combine(templatesRoot, templateName);
-        if (!File.Exists(fullTemplatePath))
-        {
-            throw new FileNotFoundException(
-                $"Template not found: {fullTemplatePath}\n" +
-                "Make sure Templates/Invoice.cshtml exists and is copied to output.");
-        }
+        // ---- Assets ----
         var fontPath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "fonts", "Limelight-Regular.ttf");
         byte[] fontBytes = await File.ReadAllBytesAsync(fontPath);
         string fontBase64 = $"data:font/ttf;base64,{Convert.ToBase64String(fontBytes)}";
- 
-        // ---- Logo ----
+
         var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "assets", "images", "logo.png");
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
         string logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(imageBytes)}";
@@ -61,15 +40,15 @@ public class Program
 
             SellerAddress =
             @"Distorted People GmbH
-      Example Street 123
-      1234 AB Example City
-      COUNTRY",
+Example Street 123
+1234 AB Example City
+COUNTRY",
 
             PlatformName = "Online Marketplace Platform",
             PlatformAddress =
             @"Platform Street 456
-      5678 CD Platform City
-      COUNTRY",
+5678 CD Platform City
+COUNTRY",
 
             OrderDate = "01.01.2026",
             OrderNumber = "ORD-0000001",
@@ -78,42 +57,16 @@ public class Program
 
             Lines = new()
             {
-                new Product
-                {
-                    Description = "Sample Product Description - Size M - Removable Insole",
-                    Condition = "New",
-                    IsbnOrEan = "0000000000000",
-                    Quantity = 1
-                },
-                new Product
-                {
-                    Description = "Sample Product Description - Size M - Removable Insole",
-                    Condition = "New",
-                    IsbnOrEan = "0000000000000",
-                    Quantity = 1
-                },
-                new Product
-                {
-                    Description = "Sample Product Description - Size M - Removable Insole",
-                    Condition = "New",
-                    IsbnOrEan = "0000000000000",
-                    Quantity = 1
-                },
-                new Product
-                {
-                    Description = "Sample Product Description - Size M - Removable Insole",
-                    Condition = "New",
-                    IsbnOrEan = "0000000000000",
-                    Quantity = 1
-                },
+                new Product { Description = "Sample Product Description - Size M - Removable Insole", Condition = "New", IsbnOrEan = "0000000000000", Quantity = 1 },
+                new Product { Description = "Sample Product Description - Size M - Removable Insole", Condition = "New", IsbnOrEan = "0000000000000", Quantity = 1 },
+                new Product { Description = "Sample Product Description - Size M - Removable Insole", Condition = "New", IsbnOrEan = "0000000000000", Quantity = 1 },
+                new Product { Description = "Sample Product Description - Size M - Removable Insole", Condition = "New", IsbnOrEan = "0000000000000", Quantity = 1 },
             },
         };
 
-        // ---- Render Razor -> HTML ----
-        var renderer = new RazorReportRenderer(templatesRoot);
+        // ---- Blazor (component) -> HTML ----
+        var html = await RenderBlazorComponentToHtmlAsync(model);
 
-        
-        var html = await renderer.RenderAsync(templateName, model); 
         // ---- Playwright -> PDF ----
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(new()
@@ -123,8 +76,10 @@ public class Program
 
         var page = await browser.NewPageAsync();
 
+        // Base URL helps if you later add relative links (optional)
         await page.SetContentAsync(html, new() { WaitUntil = WaitUntilState.NetworkIdle });
 
+        // Wait for font loading (your original approach)
         await page.EvaluateAsync("document.fonts.ready");
 
         var pdfBytes = await page.PdfAsync(new()
@@ -140,11 +95,36 @@ public class Program
             }
         });
 
-        // ✅ Base64 output
         await File.WriteAllBytesAsync(outputPdf, pdfBytes);
 
         Console.WriteLine($"PDF written to: {Path.GetFullPath(outputPdf)}");
         Console.WriteLine($"Locale used: {culture}");
     }
 
+    private static async Task<string> RenderBlazorComponentToHtmlAsync(InvoiceTemplateModel model)
+    {
+        var services = new ServiceCollection();
+
+        services.AddLogging(b => b.AddConsole());
+
+        // Add any services your component needs here, e.g. localisation, formatting, etc.
+        // services.AddSingleton<SomeService>();
+
+        await using var sp = services.BuildServiceProvider();
+        var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+
+        var renderer = new HtmlRenderer(sp, loggerFactory);
+
+        // HtmlRenderer requires work to run on its dispatcher
+        return await renderer.Dispatcher.InvokeAsync(async () =>
+        {
+            var parameters = ParameterView.FromDictionary(new Dictionary<string, object?>
+            {
+                ["Model"] = model
+            });
+
+            var rendered = await renderer.RenderComponentAsync<Invoice>(parameters);
+            return rendered.ToHtmlString();
+        });
+    }
 }
