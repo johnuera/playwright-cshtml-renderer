@@ -2,8 +2,8 @@
 
 A .NET project that generates invoices and shipping labels using:
 
-- Razor (CSHTML) templates
-- RazorLight for server-side rendering
+- Blazor (.razor) templates
+- Blazor for server-side rendering
 - Playwright for PDF / PDF generation
 - ZXing.Net for barcode generation
 
@@ -11,7 +11,7 @@ A .NET project that generates invoices and shipping labels using:
 
 ## 🚀 Features
 
-- Server-side Razor template rendering
+- Server-side Blazor template rendering
 - A4 PDF generation via Playwright
 - CODE128 / EAN / QR barcode support
 - Embedded fonts (Base64)
@@ -22,11 +22,11 @@ A .NET project that generates invoices and shipping labels using:
 
 ## 🏗 Tech Stack
 
-- .NET 7 / 8
-- RazorLight
+- .NET 8
+- Blazor
 - Microsoft.Playwright
 - ZXing.Net + SkiaSharp
-- CSHTML templates
+- Blazor templates
 
 ---
 
@@ -34,8 +34,8 @@ A .NET project that generates invoices and shipping labels using:
 
 
 ```
-/Templates
-  └── Invoice.cshtml
+/Components
+  └── Invoice.razor
 
 /assets
   ├── styles/
@@ -75,7 +75,7 @@ pwsh bin/Debug/net8.0/playwright.ps1 install
 
 ## 🧾 Generate PDF Example
 ``` c#
-var html = await razorEngine.CompileRenderAsync("Templates/Invoice.cshtml", model);
+ var rendered = await renderer.RenderComponentAsync<Invoice>(parameters);
 
 await page.SetContentAsync(html);
 
@@ -92,9 +92,9 @@ await page.PdfAsync(new PagePdfOptions
 ``` c# 
 model.BarcodeBase64 = BarcodeService.GenerateCode128(model.BarcodeValue);
 ```
-### In CSHTML:
+### In .Razor:
 ``` HTML
-<img src="data:image/png;base64,@Model.BarcodeBase64" />
+<img src="data:image/png;base64,@Model.BarcodeBase64" alt="Barcode" />
 ``` 
 
 ### 🎨 Styling
